@@ -1,0 +1,12 @@
+services:
+  rmq:
+    image: rabbitmq:3-management
+    container_name: rmq
+    hostname: rmq
+    ports:
+      - "5672:5672" # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: changeme
+    restart: unless-stopped
