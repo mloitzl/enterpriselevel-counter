@@ -1,0 +1,35 @@
+{{
+    const username = 'admin';
+    const password = 'changeme';
+    const auth = Buffer.from(`${username}:${password}`).toString('base64');
+    console.log(`Authorization: Basic ${auth}`);
+    exports.auth = auth;
+}}
+
+GET http://localhost:5984/numbers/_changes?include_docs=true&limit=1&descending=true HTTP/1.1
+Authorization: Basic {{auth}}
+
+GET http://localhost:5984/numbers/ea371656bf8fd90751e1cb0af9004bd8 HTTP/1.1
+Authorization: Basic {{auth}}
+
+GET http://localhost:5984/_all_dbs HTTP/1.1
+Authorization: Basic {{auth}}
+
+PUT http://localhost:5984/numbers HTTP/1.1
+Authorization: Basic {{auth}}
+
+GET http://localhost:5984/numbers/_all_docs HTTP/1.1
+Authorization: Basic {{auth}}
+
+
+POST http://localhost:5984/numbers HTTP/1.1
+Authorization: Basic {{auth}}
+Content-Type: application/json
+{   "_id": "one",
+    "name": "one",
+    "value": 1
+}
+
+
+GET http://localhost:5984/numbers HTTP/1.1
+Authorization: Basic {{auth}}

@@ -14,7 +14,15 @@ async function startPublisher() {
 
   setInterval(() => {
     currentNumber++;
-    channel.sendToQueue(QUEUE, Buffer.from(currentNumber.toString()));
+    channel.sendToQueue(
+      QUEUE,
+      Buffer.from(
+        JSON.stringify({
+          type: "NUMBER_INCREMENTED",
+          data: { payload: currentNumber },
+        })
+      )
+    );
     console.log(`📤 Sent: ${currentNumber}`);
   }, 1000);
 }

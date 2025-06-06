@@ -1,45 +1,44 @@
-import { useSubscription } from "@apollo/client";
-import { NUMBER_INCREMENTED } from "./graphql/subscriptions";
+import { useQuery, useSubscription } from "@apollo/client";
+import { PROJECTION_UPDATED, LATEST_PROJECTION } from "./graphql/subscriptions";
 
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+import { useEffect, useState } from "react";
 
 function App() {
-  const { data, loading } = useSubscription(NUMBER_INCREMENTED);
-  const [count, setCount] = useState(0);
+  const { data, loading } = useSubscription(PROJECTION_UPDATED);
+  const [sub, setSub] = useState("Waiting for subscription...");
+  const {
+    data: latest,
+    loading: latestLoading,
+    error: latestError,
+    refetch: refetchLatest,
+  } = useQuery(LATEST_PROJECTION);
+
+  useEffect(() => {
+    if (data) {
+      refetchLatest();
+      setSub(
+        `Subscription received: ${
+          data.projectionUpdated.value
+        } at ${new Date().toLocaleTimeString()}`
+      );
+    }
+  }, [data, refetchLatest]);
 
   return (
     <>
       <div style={{ textAlign: "center", marginTop: "4rem" }}>
-        <h1>📡 Real-time Number Tracker</h1>
+        <pre>{sub}</pre>
+        <h3>📡 Real-time Number Tracker</h3>
         {loading ? (
           <p>Connecting to subscription...</p>
         ) : (
-          <h2>Current Number: {data?.numberIncremented}</h2>
+          <div>
+            <h2>Current Number: {data?.projectionUpdated.value}</h2>
+            <pre>Hmm..{JSON.stringify(latest, null, 2)}</pre>
+          </div>
         )}
       </div>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }

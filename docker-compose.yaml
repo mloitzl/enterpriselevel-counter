@@ -10,3 +10,16 @@ services:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: changeme
     restart: unless-stopped
+
+  couchdb:
+    image: couchdb:latest
+    container_name: couchdb
+    hostname: couchdb
+    ports:
+      - "5984:5984" # CouchDB HTTP API
+    volumes:
+      - $PWD/couchdb.ini:/opt/couchdb/etc/local.ini
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: changeme
+    restart: unless-stopped
